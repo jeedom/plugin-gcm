@@ -1,0 +1,10 @@
+{
+	"id" : "gcm",
+	"name" : "Google cloud message",
+	"description" : "Plugin pour envoyer des notification push sur chrome par google cloud message",
+	"licence" : "AGPL",
+	"author" : "Loïc",
+	"require" : "3.0",
+	"category" : "communication",
+	"eventjs" : 1
+}
