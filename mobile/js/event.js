@@ -10,47 +10,75 @@ try {
 				if(!isset(config.apiKey) || config.apiKey == ''){
 					return;
 				}
-				firebase.initializeApp(config);
-				const messaging = firebase.messaging();
-				navigator.serviceWorker.register('./plugins/gcm/core/js/firebase-messaging-sw.js')
-				.then((registration) => {
-					messaging.useServiceWorker(registration);
-					messaging.requestPermission().then(function() {
-						console.log('Notification permission granted.');
-					}).catch(function(err) {
-						console.log('Unable to get permission to notify.', err);
-					});
-					messaging.getToken().then(function(currentToken) {
-						if (currentToken) {
-							$.ajax({
-								type: "POST",
-								url: "plugins/gcm/core/ajax/gcm.ajax.php",
-								data: {
-									action: "checkAndCreate",
-									id : currentToken,
-								},
-								dataType: 'json',
-								global : false,
-								error: function (request, status, error) {
-									handleAjaxError(request, status, error);
-								},
-								success: function (data) {
-									if (data.state != 'ok') {
-										$('#div_alert').showAlert({message: data.result, level: 'danger'});
-										return;
+				try{
+					firebase.initializeApp(config);
+					const messaging = firebase.messaging();
+					navigator.serviceWorker.register('./plugins/gcm/core/js/firebase-messaging-sw.js').then((registration) => {
+						messaging.useServiceWorker(registration);
+						messaging.requestPermission().then(function() {
+							console.log('[GCM] Notification permission granted.');
+						}).catch(function(err) {
+							console.log('[GCM] Unable to get permission to notify.', err);
+						});
+						messaging.getToken().then(function(currentToken) {
+							if (currentToken) {
+								$.ajax({
+									type: "POST",
+									url: "plugins/gcm/core/ajax/gcm.ajax.php",
+									data: {
+										action: "checkAndCreate",
+										id : currentToken,
+									},
+									dataType: 'json',
+									global : false,
+									error: function (request, status, error) {
+										handleAjaxError(request, status, error);
+									},
+									success: function (data) {
+										if (data.state != 'ok') {
+											$('#div_alert').showAlert({message: data.result, level: 'danger'});
+											return;
+										}
 									}
-								}
+								});
+							} else {
+								console.log('[GCM] No Instance ID token available. Request permission to generate one.');
+							}
+						}).catch(function(err) {
+							console.log('[GCM] An error occurred while retrieving token. ', err);
+						});
+						messaging.onMessage(function(payload) {
+							notify(payload.notification.title, payload.notification.body);
+						});
+						messaging.onTokenRefresh(function() {
+							messaging.getToken().then(function(refreshedToken) {
+								$.ajax({
+									type: "POST",
+									url: "plugins/gcm/core/ajax/gcm.ajax.php",
+									data: {
+										action: "checkAndCreate",
+										id : currentToken,
+									},
+									dataType: 'json',
+									global : false,
+									error: function (request, status, error) {
+										handleAjaxError(request, status, error);
+									},
+									success: function (data) {
+										if (data.state != 'ok') {
+											$('#div_alert').showAlert({message: data.result, level: 'danger'});
+											return;
+										}
+									}
+								});
+							}).catch(function(err) {
+								console.log('[GCM] Unable to retrieve refreshed token ', err);
 							});
-						} else {
-							console.log('No Instance ID token available. Request permission to generate one.');
-						}
-					}).catch(function(err) {
-						console.log('An error occurred while retrieving token. ', err);
+						});
 					});
-					messaging.onMessage(function(payload) {
-						notify(payload.notification.title, payload.notification.body);
-					});
-				});
+				}catch (e) {
+					console.log(e);
+				}
 			}
 		});
 	});
