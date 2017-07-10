@@ -9,6 +9,6 @@ const messaging = firebase.messaging()
 messaging.setBackgroundMessageHandler(function(payload) {
   return self.registration.showNotification(payload.notification.title,{
     body: payload.notification.body,
-    icon: '/firebase-logo.png'
+    icon: payload.notification.icon
   });
 });

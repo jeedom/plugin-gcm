@@ -126,6 +126,7 @@ class gcmCmd extends cmd {
 			'notification' => array(
 				'title' => $_options['title'],
 				'body' => $_options['message'],
+				'icon' => '/firebase-logo.png',
 			),
 		);
 		if ($eqLogic->getConfiguration('id') == 'all') {
@@ -138,6 +139,9 @@ class gcmCmd extends cmd {
 			}
 		} else {
 			$data['to'] = $eqLogic->getConfiguration('id');
+		}
+		if (isset($_options['files']) && count($_options['files']) > 0) {
+			$data['notification']['icon'] = network::getNetworkAccess('external') . '/plugins/gcm/core/php/jeeFile.php?apikey=' . jeedom::getApiKey('gcm') . '&file=' . urlencode($_options['files'][0]);
 		}
 		gcm::send($data);
 	}

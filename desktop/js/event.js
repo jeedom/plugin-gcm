@@ -48,6 +48,7 @@ try {
 							console.log('[GCM] An error occurred while retrieving token. ', err);
 						});
 						messaging.onMessage(function(payload) {
+							console.log(payload);
 							notify(payload.notification.title, payload.notification.body);
 						});
 						messaging.onTokenRefresh(function() {
