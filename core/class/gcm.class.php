@@ -149,4 +149,4 @@ class gcmCmd extends cmd {
 	/*     * **********************Getteur Setteur*************************** */
 }
 
-?>
+
