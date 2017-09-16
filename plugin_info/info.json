@@ -6,5 +6,7 @@
 	"author" : "Loïc",
 	"require" : "3.0",
 	"category" : "communication",
-	"eventjs" : 1
+	"eventjs" : 1,
+	"changelog" : "https://github.com/jeedom/plugin-gcm/blob/stable/doc/#language#/changelog.asciidoc",
+	"documentation" : "https://github.com/jeedom/plugin-gcm/blob/stable/doc/#language#/index.asciidoc"
 }
